@@ -1,5 +1,91 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-%}
-<h2>Welcome to the Home Page!</h2>
-<p>This is the content of the home page.</p>
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero h2 {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .cta-button {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+
+    .feature h3 {
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .feature p {
+        color: #666;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="hero">
+    <h2>Welcome to Todo Manager</h2>
+    <p>Stay organized and boost your productivity with our simple and elegant todo application.</p>
+    <a href="{% url 'todo-list' %}" class="cta-button">Get Started</a>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <h3>Simple & Clean</h3>
+        <p>A beautiful, distraction-free interface that helps you focus on what matters.</p>
+    </div>
+    <div class="feature">
+        <h3>Priority Management</h3>
+        <p>Organize your tasks with Low, Medium, and High priority levels.</p>
+    </div>
+    <div class="feature">
+        <h3>Track Progress</h3>
+        <p>Mark tasks as completed and keep track of your accomplishments.</p>
+    </div>
+</div>
 {% endblock %}
