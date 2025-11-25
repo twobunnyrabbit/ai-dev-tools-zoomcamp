@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create Todo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Create New Todo</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required placeholder="Enter todo title..." />
+        </div>
+
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" placeholder="Add a description (optional)..."></textarea>
+        </div>
+
+        <div>
+            <label for="priority">Priority:</label>
+            <select id="priority" name="priority">
+                <option value="1">Low</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">High</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Create Todo</button>
+            <a href="{% url 'todo-list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
