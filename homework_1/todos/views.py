@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Todo
 
+def home(request):
+    return render(request, 'home.html')
+
 def todo_list(request):
-    todos = Todo.objects.all().order_by('-created_at')
+    active_todos = Todo.objects.filter(completed=False).order_by('-priority', '-created_at')
+    completed_todos = Todo.objects.filter(completed=True).order_by('-updated_at')
     context = {
-        'todos': todos
+        'active_todos': active_todos,
+        'completed_todos': completed_todos
     }
     return render(request, 'todos/todo_list.html', context)
 

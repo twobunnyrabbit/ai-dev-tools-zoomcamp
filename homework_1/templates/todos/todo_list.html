@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}Todo List{% endblock %}
+
+{% block content %}
+<style>
+    .todo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .todo-list {
+        list-style: none;
+    }
+
+    .todo-item {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-left: 4px solid #667eea;
+    }
+
+    .todo-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .todo-item.completed {
+        opacity: 0.7;
+        border-left-color: #4ade80;
+    }
+
+    .todo-item.priority-high {
+        border-left-color: #ef4444;
+    }
+
+    .todo-item.priority-medium {
+        border-left-color: #f59e0b;
+    }
+
+    .todo-item.priority-low {
+        border-left-color: #3b82f6;
+    }
+
+    .todo-header-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .todo-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .todo-title.completed {
+        text-decoration: line-through;
+        color: #999;
+    }
+
+    .priority-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 1rem;
+    }
+
+    .priority-badge.high {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .priority-badge.medium {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .priority-badge.low {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .completed-badge {
+        background: #d1fae5;
+        color: #059669;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .todo-description {
+        color: #666;
+        margin: 0.75rem 0;
+        line-height: 1.6;
+    }
+
+    .todo-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .todo-actions a {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .edit-btn {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    .edit-btn:hover {
+        background: #c7d2fe;
+    }
+
+    .delete-btn {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .delete-btn:hover {
+        background: #fecaca;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-state h3 {
+        color: #666;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .empty-state p {
+        color: #999;
+        margin-bottom: 2rem;
+    }
+
+    .completed-section {
+        margin-top: 3rem;
+    }
+
+    .collapse-toggle {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s;
+        border: none;
+        width: 100%;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .collapse-toggle:hover {
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .toggle-icon {
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+    }
+
+    .toggle-icon.open {
+        transform: rotate(180deg);
+    }
+
+    .completed-count {
+        background: #d1fae5;
+        color: #059669;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-left: 0.75rem;
+    }
+
+    .completed-list {
+        margin-top: 1rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+
+    .completed-list.open {
+        max-height: 5000px;
+    }
+</style>
+
+<div class="container">
+    <div class="todo-header">
+        <h1>My Todos</h1>
+        <a href="{% url 'create-todo' %}" class="btn">+ Create New Todo</a>
+    </div>
+
+    {% if active_todos %}
+        <ul class="todo-list">
+            {% for todo in active_todos %}
+            <li class="todo-item priority-{{ todo.get_priority_display|lower }}">
+                <div class="todo-header-section">
+                    <div>
+                        <h3 class="todo-title">
+                            {{ todo.title }}
+                            <span class="priority-badge {{ todo.get_priority_display|lower }}">
+                                {{ todo.get_priority_display }}
+                            </span>
+                        </h3>
+                    </div>
+                </div>
+                {% if todo.description %}
+                <p class="todo-description">{{ todo.description }}</p>
+                {% endif %}
+                <div class="todo-actions">
+                    <a href="{% url 'update-todo' todo.pk %}" class="edit-btn">Edit</a>
+                    <a href="{% url 'delete-todo' todo.pk %}" class="delete-btn">Delete</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">
+            <h3>No active todos!</h3>
+            <p>Get started by creating your first todo.</p>
+            <a href="{% url 'create-todo' %}" class="btn">Create Your First Todo</a>
+        </div>
+    {% endif %}
+
+    {% if completed_todos %}
+    <div class="completed-section">
+        <button class="collapse-toggle" onclick="toggleCompleted()">
+            <span>
+                Completed Todos
+                <span class="completed-count">{{ completed_todos|length }}</span>
+            </span>
+            <span class="toggle-icon" id="toggleIcon">▼</span>
+        </button>
+        <div class="completed-list" id="completedList">
+            <ul class="todo-list">
+                {% for todo in completed_todos %}
+                <li class="todo-item completed priority-{{ todo.get_priority_display|lower }}">
+                    <div class="todo-header-section">
+                        <div>
+                            <h3 class="todo-title completed">
+                                {{ todo.title }}
+                                <span class="priority-badge {{ todo.get_priority_display|lower }}">
+                                    {{ todo.get_priority_display }}
+                                </span>
+                                <span class="completed-badge">Completed</span>
+                            </h3>
+                        </div>
+                    </div>
+                    {% if todo.description %}
+                    <p class="todo-description">{{ todo.description }}</p>
+                    {% endif %}
+                    <div class="todo-actions">
+                        <a href="{% url 'update-todo' todo.pk %}" class="edit-btn">Edit</a>
+                        <a href="{% url 'delete-todo' todo.pk %}" class="delete-btn">Delete</a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleCompleted() {
+    const completedList = document.getElementById('completedList');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    completedList.classList.toggle('open');
+    toggleIcon.classList.toggle('open');
+}
+</script>
+{% endblock %}
